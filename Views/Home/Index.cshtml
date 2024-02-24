@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width-device-witdh, initial-scale-1.0" >
+    <link rel="stylesheet" href="/css/searchbox.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <title>Article Research</title>
+    </head>
+
+    <body>
+    @using (Html.BeginForm("Search", "Home", FormMethod.Post))
+{
+    <div class="search-main"> 
+        <!-- searchbox.css dosyasında .search-main yazarak bu kısıml ilgili geliştirme yapıldı.-->
+        <input type="text" id="searchInput" name="searchText" class="tbox-search">
+        <button type="submit" class="buton-search"><!-- buraya bir href koyup içerisindeki metin ile işlem yapılacak-->
+            <i class="fa fa-search"></i>
+        </button>
+    </div>
+}
+
+    </body>
+
+</html>
