@@ -2,9 +2,10 @@
 using System.Diagnostics;
 using Web_Scraping_Akademi_Uygulaması.Models;
 using System.Diagnostics;
-using System;
-using System.Net.Http;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Text;
+using System.Net.Http.Headers;
 
 public class HomeController : Controller
 {
@@ -22,8 +23,14 @@ public class HomeController : Controller
 
         using (var httpClient=new HttpClient())
         {
-            Debug.WriteLine("kod burada");
-            var url = "https://scholar.google.com/scholar?hl=tr&as_sdt=0%2C5&q=&btnG=";// gidilmek istenen url
+            httpClient.DefaultRequestHeaders.AcceptCharset.Add(new StringWithQualityHeaderValue("utf-8"));//desteklenmeyen karakter sti hatasını engellemek için.çünkü bunu "ISO-8859-9" desteklemiyor.
+
+            Debug.WriteLine("************||||||||||||||||||************");
+            var mainUrl = "https://scholar.google.com/scholar?hl=tr&as_sdt=0,5&as_rr=1&q=";// gidilmek istenen url şuanda sadece makale araması yapıyor
+            var url = mainUrl + searchResult;
+
+            Debug.WriteLine(url);
+
             var response=await httpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {
