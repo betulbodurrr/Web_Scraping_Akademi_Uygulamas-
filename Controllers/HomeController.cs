@@ -21,8 +21,23 @@ public class HomeController : Controller
         string searchResult = searchText;
         Debug.WriteLine(searchResult);// searchteki anahtar kelime buraya geldi.
 
+        if (searchResult.Contains(" ")){
+            for (int i = 0; i < searchResult.Length; i++)
+            {
+                if (searchResult[i].Equals(' '))
+                {
+                    StringBuilder sb = new StringBuilder(searchResult);
+                    sb[i] = '+';
+                    searchResult = sb.ToString();
+                }
+            }
+        }
+
+        Debug.WriteLine("Anahtar Kelime: "+searchResult);
+
         using (var httpClient=new HttpClient())
         {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             httpClient.DefaultRequestHeaders.AcceptCharset.Add(new StringWithQualityHeaderValue("utf-8"));//desteklenmeyen karakter sti hatasını engellemek için.çünkü bunu "ISO-8859-9" desteklemiyor.
 
             Debug.WriteLine("************||||||||||||||||||************");
