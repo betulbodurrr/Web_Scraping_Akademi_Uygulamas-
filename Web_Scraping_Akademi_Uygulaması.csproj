@@ -10,4 +10,8 @@
     <None Include="wwwroot\css\searchbox.css" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.59" />
+  </ItemGroup>
+
 </Project>
