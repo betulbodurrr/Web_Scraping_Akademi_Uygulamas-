@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Net.Http.Headers;
 using HtmlAgilityPack;
+using System.Diagnostics.Metrics;
 
 public class HomeController : Controller
 {
@@ -16,6 +17,31 @@ public class HomeController : Controller
     {
         return View();
     }
+    public string alintiSayisiBul(string metin)
+    {
+        string birinciAranan = "sayısı: ";
+        string ikinciAranan = " İlgili";
+        int birinciIndex = metin.IndexOf(birinciAranan);
+        int ikinciIndex = metin.IndexOf(ikinciAranan);
+        int aralik = ikinciIndex - birinciIndex - 8;
+        string bulunanDeger = metin.Substring(birinciIndex + 8, aralik);
+        //Debug.WriteLine(bulunanDeger);
+        //Debug.WriteLine(birinciIndex + 8);
+        //Debug.WriteLine(ikinciIndex);
+        return bulunanDeger;
+    }
+
+    public string yazarlariBul(string metin)
+    {
+        string birinciAranan = "-";
+        int birinciIndex = metin.IndexOf(birinciAranan);
+        if (birinciIndex != -1)
+        {
+            metin = metin.Substring(0, birinciIndex).Trim();
+        }
+         return metin;
+    }
+
 
     [HttpPost]
     public async Task<ActionResult> Search(string searchText)
@@ -38,7 +64,6 @@ public class HomeController : Controller
         }
 
         Debug.WriteLine("Anahtar Kelime: " + searchResult);
-
         using (var httpClient = new HttpClient())
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -60,24 +85,58 @@ public class HomeController : Controller
                 HtmlDocument doc = new HtmlDocument(); //gelen yanıtı bir belgeye dönüştürüldü. buradan html kodlarını inceliycez.
                 doc.LoadHtml(await response.Content.ReadAsStringAsync());
 
-                var nodes = doc.DocumentNode.SelectNodes("//a[contains(@href, 'pdf')]");//pdf geçen tüm bağlantılar
+                var nodes = doc.DocumentNode.SelectNodes("//div[@class='gs_r gs_or gs_scl']");
 
                 foreach (var node in nodes)
                 {
-                    string pdfUrl = node.Attributes["href"].Value;
-                    Debug.WriteLine(pdfUrl);//!!!!        ÖNEMLİ !!!!!! pdfUrl veritabanına kayıt edilecek !!!!!!
-                    pdfUrls.Add(pdfUrl);
-                    
-                    var citationCountNode = node.SelectSingleNode(".//following-sibling::a[contains(@href, '/scholar?cites=')]");
-                  
-                    if (citationCountNode != null)
-                    {
-                        string citationCountText = citationCountNode.InnerText.Trim();
-                        Debug.WriteLine("Alıntı Sayısı: " + citationCountText);
+
+                    if (node != null)
+                    {   
+                        var links = node.SelectNodes(".//a[@href]"); //tüm bağlantıları aldım
+
+                        if (links != null)
+                        {
+                            foreach (var link in links)
+                            {
+                                var href = link.GetAttributeValue("href", "");
+
+                                if (href.Contains(".pdf") || href.Contains("PDF") || href.Contains("pdf"))
+                                {
+                                    Debug.WriteLine("PDF Bağlantısı: " + href);               //                !!!!!!!!!!!!VERİTABANI!!!!!!!!!!!!!!
+
+                                    // pdf varsa yazarlarını ve alıntı sayısını alıyor
+                                    var yazarlar = node.SelectSingleNode(".//div[@class='gs_a']");
+                                    if (yazarlar != null)
+                                    {
+                                        var yazarText = yazarlar.InnerText.Trim();
+                                        string makaleYazarları = yazarlariBul(yazarText);                       // !!!!!!!!!!!!VERİTABANI!!!!!!!!!!!!!!
+
+                                        Debug.WriteLine("Yazarlar: " + makaleYazarları);         
+                                    }
+                                    else
+                                    {
+                                        Debug.WriteLine("Yazarlar bulunamadı.");
+                                    }
+
+                                    var alinti = node.SelectSingleNode(".//div[@class='gs_fl gs_flb']");
+                                    if (alinti != null)
+                                    {
+                                        var alintiText = alinti.InnerText.Trim();
+                                        string alintiSayisi = alintiSayisiBul(alintiText);//                      !!!!!!!!!!!!VERİTABANI!!!!!!!!!!!!!!
+
+                                        Debug.WriteLine("Alıntı Sayısı: " + alintiSayisi);
+                                    }
+                                    else
+                                    {
+                                        Debug.WriteLine("Alıntı sayısı bulunamadı.");
+                                    }
+                                }
+                            }
+                        }
                     }
                     else
                     {
-                        Debug.WriteLine("Alıntı sayısı bulunamadı.");
+                        Debug.WriteLine("pdf yok");
                     }
                 }
             }
@@ -85,7 +144,9 @@ public class HomeController : Controller
             {
                 Debug.WriteLine($"Yanıt Başarısız Oldu{response.StatusCode}");
             }
-    }
+        }
         return RedirectToAction("Index");
+
     }
+    
 }
