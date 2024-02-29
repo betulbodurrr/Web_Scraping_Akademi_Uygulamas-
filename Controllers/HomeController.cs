@@ -12,7 +12,7 @@ using System.Diagnostics.Metrics;
 public class HomeController : Controller
 {
     List<string> pdfUrls = new List<string>();
-
+    public int makaleSayac = 0;
     public ActionResult Index()
     {
         return View();
@@ -46,7 +46,7 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<ActionResult> Search(string searchText)
     {
-
+      
         string searchResult = searchText;
         Debug.WriteLine(searchResult);// searchteki anahtar kelime buraya geldi.
 
@@ -72,77 +72,102 @@ public class HomeController : Controller
             Debug.WriteLine("************||||||||||||||||||************");
             var mainUrl = "https://scholar.google.com/scholar?hl=tr&as_sdt=0,5&as_rr=1&q=";// gidilmek istenen url şuanda sadece makale araması yapıyor
             var url = mainUrl + searchResult;
-
+            makaleSayac = 0;
             Debug.WriteLine(url);
 
-            var response = await httpClient.GetAsync(url);
-            if (response.IsSuccessStatusCode)
+            Boolean kontrol1 = false;
+            Boolean kontrol2 = false;
+
+            while (makaleSayac < 10)
             {
-                var responseBody = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine(responseBody);// yanıt 
-
-
-                HtmlDocument doc = new HtmlDocument(); //gelen yanıtı bir belgeye dönüştürüldü. buradan html kodlarını inceliycez.
-                doc.LoadHtml(await response.Content.ReadAsStringAsync());
-
-                var nodes = doc.DocumentNode.SelectNodes("//div[@class='gs_r gs_or gs_scl']");
-
-                foreach (var node in nodes)
+                var response = await httpClient.GetAsync(url);
+                if (response.IsSuccessStatusCode)
                 {
+                    var responseBody = await response.Content.ReadAsStringAsync();
+                    //Debug.WriteLine(responseBody);// yanıt 
 
-                    if (node != null)
-                    {   
-                        var links = node.SelectNodes(".//a[@href]"); //tüm bağlantıları aldım
 
-                        if (links != null)
+                    HtmlDocument doc = new HtmlDocument(); //gelen yanıtı bir belgeye dönüştürüldü. buradan html kodlarını inceliycez.
+                    doc.LoadHtml(await response.Content.ReadAsStringAsync());
+
+                    var nodes = doc.DocumentNode.SelectNodes("//div[@class='gs_r gs_or gs_scl']");
+
+                    foreach (var node in nodes)
+                    {
+
+                        if (node != null)
                         {
-                            foreach (var link in links)
+                            var links = node.SelectNodes(".//a[@href]"); //tüm bağlantıları aldım
+
+                            if (links != null)
                             {
-                                var href = link.GetAttributeValue("href", "");
-
-                                if (href.Contains(".pdf") || href.Contains("PDF") || href.Contains("pdf"))
+                                foreach (var link in links)
                                 {
-                                    Debug.WriteLine("PDF Bağlantısı: " + href);               //                !!!!!!!!!!!!VERİTABANI!!!!!!!!!!!!!!
+                                    var href = link.GetAttributeValue("href", "");
 
-                                    // pdf varsa yazarlarını ve alıntı sayısını alıyor
-                                    var yazarlar = node.SelectSingleNode(".//div[@class='gs_a']");
-                                    if (yazarlar != null)
+                                    if (href.Contains(".pdf") || href.Contains("PDF") || href.Contains("pdf"))
                                     {
-                                        var yazarText = yazarlar.InnerText.Trim();
-                                        string makaleYazarları = yazarlariBul(yazarText);                       // !!!!!!!!!!!!VERİTABANI!!!!!!!!!!!!!!
+                                        Debug.WriteLine("PDF Bağlantısı: " + href);               //                !!!!!!!!!!!!VERİTABANI!!!!!!!!!!!!!!
+                                        makaleSayac++;
+                                        // pdf varsa yazarlarını ve alıntı sayısını alıyor
+                                        var yazarlar = node.SelectSingleNode(".//div[@class='gs_a']");
+                                        if (yazarlar != null)
+                                        {
+                                            var yazarText = yazarlar.InnerText.Trim();
+                                            string makaleYazarları = yazarlariBul(yazarText);                       // !!!!!!!!!!!!VERİTABANI!!!!!!!!!!!!!!
 
-                                        Debug.WriteLine("Yazarlar: " + makaleYazarları);         
-                                    }
-                                    else
-                                    {
-                                        Debug.WriteLine("Yazarlar bulunamadı.");
-                                    }
+                                            Debug.WriteLine("Yazarlar: " + makaleYazarları);
+                                        }
+                                        else
+                                        {
+                                            Debug.WriteLine("Yazarlar bulunamadı.");
+                                        }
 
-                                    var alinti = node.SelectSingleNode(".//div[@class='gs_fl gs_flb']");
-                                    if (alinti != null)
-                                    {
-                                        var alintiText = alinti.InnerText.Trim();
-                                        string alintiSayisi = alintiSayisiBul(alintiText);//                      !!!!!!!!!!!!VERİTABANI!!!!!!!!!!!!!!
+                                        var alinti = node.SelectSingleNode(".//div[@class='gs_fl gs_flb']");
+                                        if (alinti != null)
+                                        {
+                                            var alintiText = alinti.InnerText.Trim();
+                                            string alintiSayisi = alintiSayisiBul(alintiText);//                      !!!!!!!!!!!!VERİTABANI!!!!!!!!!!!!!!
 
-                                        Debug.WriteLine("Alıntı Sayısı: " + alintiSayisi);
-                                    }
-                                    else
-                                    {
-                                        Debug.WriteLine("Alıntı sayısı bulunamadı.");
+                                            Debug.WriteLine("Alıntı Sayısı: " + alintiSayisi);
+                                        }
+                                        else
+                                        {
+                                            Debug.WriteLine("Alıntı sayısı bulunamadı.");
+                                        }
                                     }
                                 }
                             }
                         }
+                        else
+                        {
+                            Debug.WriteLine("pdf yok");
+                        }
                     }
-                    else
+
+                    
+
+                    if (makaleSayac < 10 && !kontrol1)// ikinci sayfa için &start=10
                     {
-                        Debug.WriteLine("pdf yok");
+                        url = mainUrl + searchResult+ "&start=10";
+                        kontrol1 = true;
                     }
+                    else if (kontrol1 && !kontrol2)
+                    {
+                        url = mainUrl + searchResult + "&start=20";
+                        kontrol2 = true;
+                    }
+                    else if (kontrol2)
+                    {
+                        url = mainUrl + searchResult + "&start=30";
+
+                    }
+                    else break;
                 }
-            }
-            else
-            {
-                Debug.WriteLine($"Yanıt Başarısız Oldu{response.StatusCode}");
+                else
+                {
+                    Debug.WriteLine($"Yanıt Başarısız Oldu{response.StatusCode}");
+                }
             }
         }
         return RedirectToAction("Index");
