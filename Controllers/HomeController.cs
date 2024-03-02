@@ -8,11 +8,13 @@ using System.Text;
 using System.Net.Http.Headers;
 using HtmlAgilityPack;
 using System.Diagnostics.Metrics;
+using Amazon.Runtime;
 
 public class HomeController : Controller
 {
     List<string> pdfUrls = new List<string>();
     public int makaleSayac = 0;
+    DatabaseController veritabanı = new DatabaseController();
     public ActionResult Index()
     {
         return View();
@@ -129,7 +131,10 @@ public class HomeController : Controller
                                             var alintiText = alinti.InnerText.Trim();
                                             string alintiSayisi = alintiSayisiBul(alintiText);//                      !!!!!!!!!!!!VERİTABANI!!!!!!!!!!!!!!
 
+                                            //veritabanı.veriEkle(int.Parse(alintiSayisi));
+
                                             Debug.WriteLine("Alıntı Sayısı: " + alintiSayisi);
+
                                         }
                                         else
                                         {
