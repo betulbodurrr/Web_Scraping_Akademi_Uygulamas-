@@ -15,8 +15,8 @@ public class DatabaseController : Controller, IDisposable
         public string yayinTuru { get; set; }
         public string yayimlanmaTarihi { get; set; }
         public string yayinciAdi { get; set; }
-        public string anahtarKelimelerArama { get; set; }
-        public string anahtarKelimelerMakale { get; set; }
+        public string anahtarKelimelerArama { get; set; } 
+        public string anahtarKelimelerMakale { get; set; }//mongodb de dizi olarak tutulmalı
         public string ozet { get; set; }
         public string[] referanslar { get; set; } // Dizi türü düzeltildi.
         public int alintiSayisi { get; set; } // Veri tipi düzeltildi.
