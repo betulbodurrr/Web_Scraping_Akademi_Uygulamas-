@@ -11,12 +11,27 @@ using System.Diagnostics.Metrics;
 using Amazon.Runtime;
 using static System.Net.Mime.MediaTypeNames;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 public class HomeController : Controller
 {
     List<string> pdfUrls = new List<string>();
     public int makaleSayac = 0;
-    DatabaseController veritabanı = new DatabaseController();
+    DatabaseController veritabani = new DatabaseController();
+    public int a_yayinId;
+    public string a_yayinAdi;
+    List<string> a_yazarlar = new List<string>();
+    public string a_yayinTuru;
+    public string a_yayimlanmaTarihi;
+    public string a_yayinciAdi;
+    public string a_anahtarKelimelerArama;
+    List<string> a_anahtarKelimelerMakale = new List<string>();
+    List<string> a_kaynakca = new List<string>();
+    public string a_ozet;
+    List<string> a_referanslar = new List<string>();
+    public int a_alintiSayisi;
+    public string a_doiNumarasi;
+    public string a_urlAdresi;
     public ActionResult Index()
     {
         return View();
@@ -32,6 +47,7 @@ public class HomeController : Controller
             var makaleTitle = m_Title.Substring(m_Title.IndexOf("&raquo;  Makale  &raquo; ") + 25);
             //Debug.WriteLine("Makale başlığı: " + makaleTitle);
             makaleSayac++;
+            a_yayinAdi = makaleTitle;
             return makaleTitle;
         }
         else
@@ -44,10 +60,13 @@ public class HomeController : Controller
     {
         var authors = new List<string>();
         var yazarlar = doc_article.DocumentNode.SelectSingleNode("//*[@id=\"article_en\"]/p");
+        a_yazarlar.Clear();
+
         if (yazarlar != null)
         {
             var yazarTitle = yazarlar.InnerText.Trim();
             var lines = yazarTitle.Split('\n');
+
             var names = new List<string>();
             foreach (var line in lines)
             {
@@ -55,7 +74,8 @@ public class HomeController : Controller
                 {
                     if (line.Trim() != "")
                     {
-                        names.Add(line.Trim());
+                        //names.Add(line.Trim());
+                        a_yazarlar.Add(line.Trim());
                     }
 
                 }
@@ -81,13 +101,14 @@ public class HomeController : Controller
         }
         else
         {
-             ozet = doc_article.DocumentNode.SelectSingleNode("//*[@id=\"article_en\"]/div[3]");
+            ozet = doc_article.DocumentNode.SelectSingleNode("//*[@id=\"article_en\"]/div[3]");
 
         }
         if (ozet != null)
         {
             var ozetTitle = ozet.InnerText.Trim();
             //Debug.WriteLine("ozet: " + ozetTitle);
+            a_ozet = ozetTitle;
             return ozetTitle;
         }
         else
@@ -102,6 +123,7 @@ public class HomeController : Controller
         var href = linkler.GetAttributeValue("href", "");
         href = "https://dergipark.org.tr" + href;
         //Debug.WriteLine("PDF indirmek için link: " + href);
+        a_urlAdresi = href;
         return href;
     }
     public string kaynakcaBul(HtmlDocument doc_article)
@@ -109,6 +131,7 @@ public class HomeController : Controller
 
         var makaleKaynakca = new List<string>();
         var kaynakca = doc_article.DocumentNode.SelectSingleNode("//*[@id=\"article_en\"]/div[4]");
+        a_kaynakca.Clear();
 
         if (kaynakca != null && kaynakca.InnerHtml.Contains("Kaynakça"))
         {
@@ -123,23 +146,28 @@ public class HomeController : Controller
                 {
                     break;
                 }
+                else kaynakca = null;
+
             }
         }
 
         if (kaynakca != null)
-            {
-                var k_Title = kaynakca.InnerText.Trim();
-            var kaynakcaTitle = k_Title.Substring(k_Title.IndexOf("Kaynakça") + 119);
+        {
+            var k_Title = kaynakca.InnerText.Trim();
+            var kaynakcaTitle = k_Title.Substring(k_Title.IndexOf("Kaynakça"));
 
             var lines = kaynakcaTitle.Split('\n');
+            
             foreach (var line in lines)
             {
                 if (!string.IsNullOrEmpty(line) && line != " " && line != " ")
                 {
                     if (line.Trim() != "")
                     {
-                        makaleKaynakca.Add(line.Trim());
+                        //makaleKaynakca.Add(line.Trim());
+                        a_kaynakca.Add(line.Trim());
                     }
+
                 }
             }
             var namesString = string.Join(", ", makaleKaynakca);
@@ -156,9 +184,10 @@ public class HomeController : Controller
     }
     public string makaleAnahtarKelimesiBul(HtmlDocument doc_article)
     {
-        
+
         var keys = new List<string>();
         var anahtarKelime = doc_article.DocumentNode.SelectSingleNode("//*[@id=\"article_en\"]/div[2]");
+        a_anahtarKelimelerMakale.Clear();
 
         if (anahtarKelime != null && anahtarKelime.InnerHtml.Contains("Anahtar Kelimeler"))
         {
@@ -189,7 +218,8 @@ public class HomeController : Controller
                 {
                     if (line.Trim() != "")
                     {
-                        makaleAnahtarKelime.Add(line.Trim());
+                        //makaleAnahtarKelime.Add(line.Trim());
+                        a_anahtarKelimelerMakale.Add(line.Trim());
                     }
                 }
             }
@@ -208,7 +238,7 @@ public class HomeController : Controller
     public string yayımlanmaTarihiBul(HtmlDocument doc_article)
     {
         var tarih = doc_article.DocumentNode.SelectSingleNode("//tr[3]");
-        if(tarih.InnerHtml.Contains("Yayımlanma Tarihi")) { }
+        if (tarih.InnerHtml.Contains("Yayımlanma Tarihi")) { }
         else
         {
             for (int i = 4; i <= 6; i++)
@@ -218,18 +248,22 @@ public class HomeController : Controller
                 {
                     break;
                 }
+
+                else tarih = null;
             }
 
         }
-        if (tarih != null)
+        if (tarih !=null)
         {
             var t_Title = tarih.InnerText.Trim();
-            var tarihTitle = t_Title.Substring(t_Title.IndexOf("Yayınlanma Tarihi") + 46);
+            var tarihTitle = t_Title.Substring(t_Title.IndexOf("Yayımlanma Tarihi") + 46);
             //Debug.WriteLine("Yayımlanma tarihi: " + tarihTitle);
+            a_yayimlanmaTarihi = tarihTitle;
             return tarihTitle;
         }
         else
         {
+            a_yayimlanmaTarihi ="0";
             Debug.WriteLine("Yayınlanma Tarihi bulunamadı");
             return "Yayınlanma Tarihibulunamadi";
         }
@@ -253,8 +287,9 @@ public class HomeController : Controller
         if (yayinTuru != null)
         {
             var yT_Title = yayinTuru.InnerText.Trim();
-            var yayinTuruTitle = yT_Title.Substring(yT_Title.IndexOf("Bölüm")+33);
+            var yayinTuruTitle = yT_Title.Substring(yT_Title.IndexOf("Bölüm") + 38);
             //Debug.WriteLine("Yayın Türü: " + yayinTuruTitle);
+            a_yayinTuru = yayinTuruTitle;
             return yayinTuruTitle;
         }
         else
@@ -263,11 +298,34 @@ public class HomeController : Controller
             return "Yayın Türü bulunamadi";
         }
     }
+    public string alintiSayisiBul(HtmlDocument doc_article)
+    {
+        a_alintiSayisi = 0;
+        var alintiSayisi = doc_article.DocumentNode.SelectSingleNode("//*[@id=\"kt_content\"]/div/div[3]/div[1]/div[4]/div/div[0]");
+        if (alintiSayisi != null && alintiSayisi.InnerHtml.Contains("doi")) { a_alintiSayisi++; }
+        else
+        {
+            for (int i = 1; i <= 10; i++)
+            {
+                alintiSayisi = doc_article.DocumentNode.SelectSingleNode("//*[@id=\"kt_content\"]/div/div[3]/div[1]/div[4]/div/div[" + i + "]");
+                if (alintiSayisi != null && alintiSayisi.InnerHtml.Contains("doi"))
+                {
+                    var yT_Title = alintiSayisi.InnerText.Trim();
+                    Debug.WriteLine(yT_Title);
+
+                    a_alintiSayisi++;
+                }
+            }
+
+        }
+        return a_alintiSayisi.ToString();
+    }
     public string referansaBul(HtmlDocument doc_article)//BU DÜZENLENMELİ ALINTILAR 3 SATIRDAN OLUŞUYOR HER BİRİNİ \N DE BÖLÜYOR ### kaç satır kontrol edeceğine bakmak lazım hata veriyor
     {
 
         var referanslar = new List<string>();
         var referans = doc_article.DocumentNode.SelectSingleNode("//*[@id=\"kt_content\"]/div/div[3]/div[1]/div[4]/div");
+        a_referanslar.Clear();
 
         if (referans != null && referans.InnerHtml.Contains("Cited By"))
         {
@@ -277,7 +335,7 @@ public class HomeController : Controller
         {
             for (int i = 4; i <= 6; i++)
             {
-                referans = doc_article.DocumentNode.SelectSingleNode("//*[@id=\"kt_content\"]/div/div[3]/div[1]/div["+i+"]/div");
+                referans = doc_article.DocumentNode.SelectSingleNode("//*[@id=\"kt_content\"]/div/div[3]/div[1]/div[" + i + "]/div");
                 if (referans != null && referans.InnerHtml.Contains("Cited By"))
                 {
                     break;
@@ -292,23 +350,24 @@ public class HomeController : Controller
         if (referans != null)
         {
             var r_Title = referans.InnerText.Trim();
-            var referansTitle = r_Title.Substring(r_Title.IndexOf("Cited By")+37);
+            var referansTitle = r_Title.Substring(r_Title.IndexOf("Cited By") + 37);
 
             var lines = referansTitle.Split('\n');
             foreach (var line in lines)
             {
+
                 if (!string.IsNullOrEmpty(line) && line != " " && line != " ")
                 {
                     if (line.Trim() != "")
                     {
-                        referanslar.Add(line.Trim());
+                        a_referanslar.Add(line.Trim());
                     }
                 }
             }
             var namesString = string.Join("; ", referanslar);
-            Debug.WriteLine(namesString);
+            //Debug.WriteLine(namesString);
 
-            Debug.WriteLine("Referans: " + referansTitle);
+            //Debug.WriteLine("Referans: " + referansTitle);
             return referansTitle;
         }
         else
@@ -337,7 +396,7 @@ public class HomeController : Controller
                 }
             }
         }
-
+        a_anahtarKelimelerArama = searchResult;
         Debug.WriteLine("Anahtar Kelime: " + searchResult);
         using (var httpClient = new HttpClient())
         {
@@ -355,6 +414,7 @@ public class HomeController : Controller
 
             while (makaleSayac < 10)
             {
+                a_yayinId = makaleSayac;
                 var response = await httpClient.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {
@@ -405,10 +465,13 @@ public class HomeController : Controller
                                             yayımlanmaTarihiBul(doc_article);
                                             yayınTuruBul(doc_article);
                                             referansaBul(doc_article);
+                                            alintiSayisiBul(doc_article);
+                                            veritabani.veriEkle(a_yayinId, a_yayinAdi, a_yazarlar, a_yayinTuru, a_yayimlanmaTarihi, a_yayinciAdi, a_anahtarKelimelerArama, a_anahtarKelimelerMakale, a_ozet, a_kaynakca, a_referanslar, a_alintiSayisi, a_doiNumarasi, a_urlAdresi);
                                         }
                                         else
                                         {
                                             Debug.WriteLine("Linke girilemedi");
+
                                         }
                                     }
                                 }

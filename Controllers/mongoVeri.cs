@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 public class DatabaseController : Controller, IDisposable
@@ -11,20 +12,21 @@ public class DatabaseController : Controller, IDisposable
     {
         public int yayinId { get; set; }
         public string yayinAdi { get; set; }
-        public string[] yazarlar { get; set; } // Dizi türü düzeltildi.
+        public List<string> yazarlar { get; set; } // Dizi türü düzeltildi.
         public string yayinTuru { get; set; }
         public string yayimlanmaTarihi { get; set; }
         public string yayinciAdi { get; set; }
-        public string anahtarKelimelerArama { get; set; } 
-        public string anahtarKelimelerMakale { get; set; }//mongodb de dizi olarak tutulmalı
+        public string anahtarKelimelerArama { get; set; }
+        public List<string> anahtarKelimelerMakale { get; set; }//mongodb de dizi olarak tutulmalı
         public string ozet { get; set; }
-        public string[] referanslar { get; set; } // Dizi türü düzeltildi.
+        public List<string> kaynakca { get; set; } 
+        public List<string> referanslar { get; set; } // Dizi türü düzeltildi.
         public int alintiSayisi { get; set; } // Veri tipi düzeltildi.
         public string doiNumarasi { get; set; }
         public string urlAdresi { get; set; }
     }
 
-    public void veriEkle(int a_alintiSayisi)
+    public void veriEkle(int a_yayinId, string a_yayinAdi, List<string> a_yazarlar, string a_yayinTuru, string a_yayimlanmaTarihi, string a_yayinciAdi, string a_anahtarKelimelerArama, List<string> a_anahtarKelimelerMakale, string a_ozet, List<string> a_kaynakca, List<string> a_referanslar,int a_alintiSayisi, string a_doiNumarasi, string a_urlAdresi)
     {
         MongoClient dbClient = new MongoClient(dbConnection);
 
@@ -32,21 +34,22 @@ public class DatabaseController : Controller, IDisposable
             var database = dbClient.GetDatabase("yazlab1");
             var collection = database.GetCollection<AramaMotoru>("AramaMotoru");
 
-            var makale = new AramaMotoru
-            {
-                yayinId = 11,
-                yayinAdi = "deneme2",
-                yazarlar = new string[] { "deneme13", "Yazar 23" },
-                yayinTuru = "denesvdvme",
-                yayimlanmaTarihi = "2024-03-02",
-                yayinciAdi = "deneme Adı",
-                anahtarKelimelerArama = "Anahtar Kelime 1, Anahtar Kelime 2",
-                anahtarKelimelerMakale = "Anahtar Kelime 3, Anahtar Kelime 4",
-                ozet = "Bu, bir makalenin özetidir.",
-                referanslar = new string[] { "Referans 1", "Referans 2" },
-                alintiSayisi = a_alintiSayisi,
-                doiNumarasi = "1234567890",
-                urlAdresi = "https://www.example.com/makale"
+        var makale = new AramaMotoru
+        {
+            yayinId = a_yayinId,
+            yayinAdi = a_yayinAdi,
+            yazarlar = a_yazarlar,
+            yayinTuru = a_yayinTuru,
+            yayimlanmaTarihi = a_yayimlanmaTarihi,
+            yayinciAdi = a_yayinciAdi,
+            anahtarKelimelerArama = a_anahtarKelimelerArama,
+            anahtarKelimelerMakale = a_anahtarKelimelerMakale,
+            ozet = a_ozet,
+            kaynakca = a_kaynakca,
+            referanslar = a_referanslar,
+            alintiSayisi = a_alintiSayisi,
+            doiNumarasi = "000",
+            urlAdresi = a_urlAdresi,
             };
 
             try
