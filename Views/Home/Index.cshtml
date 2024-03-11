@@ -14,6 +14,8 @@
     </head>
 
     <body>
+    
+
     @using (Html.BeginForm("Search", "Home", FormMethod.Post))
 {
     <div class="search-main"> 
@@ -24,6 +26,9 @@
         </button>
     </div>
 }
+    <h1>
+        @Model.Mesaj
+    </h1>
 
     </body>
 

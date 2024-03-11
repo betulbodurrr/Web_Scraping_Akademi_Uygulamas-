@@ -12,9 +12,13 @@ using Amazon.Runtime;
 using static System.Net.Mime.MediaTypeNames;
 using System.Text.RegularExpressions;
 using System.Linq;
+using Web_Scraping_Akademi_Uygulaması.Controllers;
+using System.Net;
 
 public class HomeController : Controller
 {
+    SearchCode searchCode = new SearchCode();
+
     List<string> pdfUrls = new List<string>();
     public int makaleSayac = 0;
     DatabaseController veritabani = new DatabaseController();
@@ -34,7 +38,10 @@ public class HomeController : Controller
     public string a_urlAdresi;
     public ActionResult Index()
     {
-        return View();
+        //searchCode.searchCode();
+        var model = new MesajModel();
+        model.Mesaj = "Merhaba!";
+        return View(model);
     }
 
 
@@ -47,6 +54,8 @@ public class HomeController : Controller
             var makaleTitle = m_Title.Substring(m_Title.IndexOf("&raquo;  Makale  &raquo; ") + 25);
             //Debug.WriteLine("Makale başlığı: " + makaleTitle);
             makaleSayac++;
+            
+
             a_yayinAdi = makaleTitle;
             return makaleTitle;
         }
@@ -124,6 +133,7 @@ public class HomeController : Controller
         href = "https://dergipark.org.tr" + href;
         //Debug.WriteLine("PDF indirmek için link: " + href);
         a_urlAdresi = href;
+        DownloadPdf(href);
         return href;
     }
     public string kaynakcaBul(HtmlDocument doc_article)
@@ -376,11 +386,36 @@ public class HomeController : Controller
             return "Referans bulunamadi";
         }
     }
+    public void DownloadPdf(string url)
+    {
+        string filePath = @"C:\Users\betlb\source\repos\Web_Scraping_Akademi_Uygulaması\pdf\"+a_yayinAdi+".pdf";
+        Thread.Sleep(4000);
+
+        var request = (HttpWebRequest)WebRequest.Create(url);
+        request.Method = "GET";
+
+        using (var response = (HttpWebResponse)request.GetResponse())
+        {
+            using (var stream = response.GetResponseStream())
+            {
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    stream.CopyTo(fileStream);
+                }
+            }
+        }
+    }
+
+
+public class MesajModel
+    {
+        public string Mesaj { get; set; }
+        
+    }
 
     [HttpPost]
     public async Task<ActionResult> Search(string searchText)
     {
-
         string searchResult = searchText;
         Debug.WriteLine(searchResult);// searchteki anahtar kelime buraya geldi.
 

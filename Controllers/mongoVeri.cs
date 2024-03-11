@@ -61,7 +61,9 @@ public class DatabaseController : Controller, IDisposable
             {
                 Console.WriteLine("Hata: " + ex.Message);
             }
-        
-
     }
+
+
+
+
 }
