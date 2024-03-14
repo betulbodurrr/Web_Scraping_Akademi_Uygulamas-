@@ -7,7 +7,6 @@ using System.Net;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Diagnostics;
-using static DatabaseController;
 using System.Net.Sockets;
 using MongoDB.Bson.IO;
 using System.Text.Json;

@@ -38,13 +38,11 @@ public class HomeController : Controller
     public string a_urlAdresi;
     public ActionResult Index()
     {
+        veritabani.bilgiAl();
         //searchCode.searchCode();
-        var model = new MesajModel();
-        model.Mesaj = "Merhaba!";
-        return View(model);
+
+        return View(veritabani.modelList);
     }
-
-
     public string makaleAdiBul(HtmlDocument doc_article)
     {
         var makaleler = doc_article.DocumentNode.SelectSingleNode("//title");
@@ -194,7 +192,6 @@ public class HomeController : Controller
     }
     public string makaleAnahtarKelimesiBul(HtmlDocument doc_article)
     {
-
         var keys = new List<string>();
         var anahtarKelime = doc_article.DocumentNode.SelectSingleNode("//*[@id=\"article_en\"]/div[2]");
         a_anahtarKelimelerMakale.Clear();
@@ -406,13 +403,6 @@ public class HomeController : Controller
         }
     }
 
-
-public class MesajModel
-    {
-        public string Mesaj { get; set; }
-        
-    }
-
     [HttpPost]
     public async Task<ActionResult> Search(string searchText)
     {
@@ -501,7 +491,8 @@ public class MesajModel
                                             yayınTuruBul(doc_article);
                                             referansaBul(doc_article);
                                             alintiSayisiBul(doc_article);
-                                            veritabani.veriEkle(a_yayinId, a_yayinAdi, a_yazarlar, a_yayinTuru, a_yayimlanmaTarihi, a_yayinciAdi, a_anahtarKelimelerArama, a_anahtarKelimelerMakale, a_ozet, a_kaynakca, a_referanslar, a_alintiSayisi, a_doiNumarasi, a_urlAdresi);
+                                            veritabani.veriEkle( a_yayinAdi, a_yazarlar, a_yayinTuru, a_yayimlanmaTarihi, a_yayinciAdi, a_anahtarKelimelerArama, a_anahtarKelimelerMakale, a_ozet, a_kaynakca, a_referanslar, a_alintiSayisi, a_doiNumarasi, a_urlAdresi);
+
                                         }
                                         else
                                         {

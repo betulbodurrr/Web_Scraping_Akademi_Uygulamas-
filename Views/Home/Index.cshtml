@@ -1,35 +1,79 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-    Layout = null;
-}
-
+﻿
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width-device-witdh, initial-scale-1.0" >
-    <link rel="stylesheet" href="/css/searchbox.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-        <title>Article Research</title>
-    </head>
+<html>
 
-    <body>
-    
 
-    @using (Html.BeginForm("Search", "Home", FormMethod.Post))
-{
-    <div class="search-main"> 
-        <!-- searchbox.css dosyasında .search-main yazarak bu kısıml ilgili geliştirme yapıldı.-->
-        <input type="text" id="searchInput" name="searchText" class="tbox-search">
-        <button type="submit" class="buton-search"><!-- buraya bir href koyup içerisindeki metin ile işlem yapılacak-->
-            <i class="fa fa-search"></i>
-        </button>
-    </div>
-}
-    <h1>
-        @Model.Mesaj
-    </h1>
 
-    </body>
+<body>
+
+
+    <main id="main">
+
+
+        <!-- ======= Blog Section ======= -->
+        <section id="blog" class="blog">
+            <div class="container" data-aos="fade-up">
+
+                @model List<Web_Scraping_Akademi_Uygulaması.Controllers.DatabaseController.AramaMotoru>
+
+                                <div class="row">
+                                    <div class="col-lg-12">
+
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Datatables</h5>
+
+                                                <!-- Table with stripped rows -->
+                                                <table class="table datatable">
+                                                    <thead>
+                                                        <tr>
+                                                <th scope="col">Makale Adı</th>
+                                                <th scope="col">Özet</th>
+                                                <th scope="col">yayımlanma Tarihi</th>
+                                                <th scope="col">PDF</th>
+
+                                           
+                                                <!--<th data-type="date" data-format="YYYY/DD/MM">Start Date</th> -->
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @for (int i = 0; i < 10 && i < Model.Count; i++)
+                                                        {
+
+                                            <tr>
+                                                                <td><a href="Home/Privacy.cshtml">@Model[i].yayinAdi</a></td>
+                                                                <td>@Model[i].ozet</td>
+                                                                <td>@Model[i].yayimlanmaTarihi</td>
+                                                                <td><a href=@Model[i].urlAdresi>PDF</a></td>
+                                                            </tr>
+
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                                <!-- End Table with stripped rows -->
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                </div>
+
+
+            </div>
+        </section><!-- End Blog Section -->
+
+    </main><!-- End #main -->
+
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Vendor JS Files -->
+    <!-- Template Main JS File -->
+    <script src="~/Sailor/assets/js/main.js"></script>
+
+</body>
 
 </html>
