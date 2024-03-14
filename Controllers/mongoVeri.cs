@@ -41,6 +41,7 @@ namespace Web_Scraping_Akademi_Uygulaması.Controllers
             var database = dbClient.GetDatabase("yazlab1");
             var collection = database.GetCollection<AramaMotoru>("AramaMotoru");
 
+            a_yayimlanmaTarihi = TarihDuzenle(a_yayimlanmaTarihi);
             var makale = new AramaMotoru
             {
                 Id = count,
@@ -56,7 +57,7 @@ namespace Web_Scraping_Akademi_Uygulaması.Controllers
                 kaynakca = a_kaynakca,
                 referanslar = a_referanslar,
                 alintiSayisi = a_alintiSayisi,
-                doiNumarasi = "000",
+                doiNumarasi = "0000",
                 urlAdresi = a_urlAdresi,
             };
 
@@ -90,6 +91,16 @@ namespace Web_Scraping_Akademi_Uygulaması.Controllers
             }
             return modelList;
         }
+        public static string TarihDuzenle(string tarih)
+        {
+            string[] ayIsimleri = { "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık" };
+            int ay_Index = Array.IndexOf(ayIsimleri, tarih.Split(" ")[1]);
+            string gun = tarih.Split(" ")[0];
+            string yil = tarih.Split(" ")[2];
+            return yil + "/" + (ay_Index + 1)+ "/" +gun ;
+        }
 
     }
+    
+
 }

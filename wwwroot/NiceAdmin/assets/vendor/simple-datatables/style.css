@@ -1,41 +1,5 @@
-.datatable-wrapper.no-header .datatable-container {
-	border-top: 1px solid #d9d9d9;
-}
 
-.datatable-wrapper.no-footer .datatable-container {
-	border-bottom: 1px solid #d9d9d9;
-}
 
-.datatable-top,
-.datatable-bottom {
-	padding: 8px 10px;
-}
-
-.datatable-top > nav:first-child,
-.datatable-top > div:first-child,
-.datatable-bottom > nav:first-child,
-.datatable-bottom > div:first-child {
-	float: left;
-}
-
-.datatable-top > nav:last-child,
-.datatable-top > div:not(first-child),
-.datatable-bottom > nav:last-child,
-.datatable-bottom > div:last-child {
-	float: right;
-}
-
-.datatable-selector {
-	padding: 6px;
-}
-
-.datatable-input {
-	padding: 6px 12px;
-}
-
-.datatable-info {
-	margin: 7px 0;
-}
 
 /* PAGER */
 .datatable-pagination ul {
@@ -217,11 +181,7 @@
 	text-align: center;
 }
 
-.datatable-top::after, .datatable-bottom::after {
-	clear: both;
-	content: " ";
-	display: table;
-}
+
 
 table.datatable-table:focus tr.datatable-cursor > td:first-child {
 	border-left: 3px blue solid;

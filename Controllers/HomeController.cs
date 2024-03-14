@@ -385,7 +385,19 @@ public class HomeController : Controller
     }
     public void DownloadPdf(string url)
     {
-        string filePath = @"C:\Users\betlb\source\repos\Web_Scraping_Akademi_Uygulaması\pdf\"+a_yayinAdi+".pdf";
+        string ad = a_yayinAdi ;
+        if (a_yayinAdi.Contains("?"))
+        {
+            ad = a_yayinAdi.Replace("?", "_");
+
+        }
+        if (a_yayinAdi.Contains("*"))
+        {
+            ad = a_yayinAdi.Replace("*", "_");
+
+        }
+
+        string filePath = @"C:\Users\betlb\source\repos\Web_Scraping_Akademi_Uygulaması\pdf\"+ ad + ".pdf";
         Thread.Sleep(4000);
 
         var request = (HttpWebRequest)WebRequest.Create(url);
