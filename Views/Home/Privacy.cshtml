@@ -1,6 +1,107 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
-}
-<h1>@ViewData["Title"]</h1>
+﻿
 
-<p>Use this page to detail your site's privacy policy.</p>
+<!DOCTYPE html>
+<html>
+<body>
+    <main id="main">
+        @model List<Web_Scraping_Akademi_Uygulaması.Controllers.DatabaseController.AramaMotoru>
+
+
+        <section id="blog" class="blog">
+            <div class="container" data-aos="fade-up">
+
+                <div class="row">
+
+                    <div class="col-lg-8 entries">
+
+                        <article class="entry">
+
+
+
+                            <h2 class="entry-title">
+                                <a href="@Model[0].urlAdresi">
+                                    @Model[0].yayinAdi
+                                </a>
+                            </h2>
+
+                            <div class="entry-meta">
+                                <ul>
+                                    <li class="d-flex align-items-center"> <a>Alıntı Sayısı: @Model[0].alintiSayisi</a></li>
+                                    <li class="d-flex align-items-center"><a>Yayımlanma tarihi: @Model[0].yayimlanmaTarihi</a></li>
+
+                                </ul>
+                            </div>
+
+                            <div class="entry-content">
+                                <p>
+                                    @Model[0].ozet
+
+                                </p>
+                            </div>
+                            <div class="entry-content">
+                                <p>
+                                    <h5>Yazarlar:</h5>
+                                    @for (int i = 0; i < @Model[0].yazarlar.Count; i++)
+                                    {
+                                        <a>@Model[0].yazarlar[i],</a>
+                                    }
+
+
+                                </p>
+                            </div>
+                            
+
+                            <div class="entry-content">
+                                <p>
+                                    <h5>Anahtar Kelimeler:</h5>
+                                    @for (int i = 0; i < @Model[0].anahtarKelimelerMakale.Count; i++)
+                                    {
+                                        <a>@Model[0].anahtarKelimelerMakale[i],</a>
+                                    }
+
+                                </p>
+                            </div>
+                            <div class="entry-content">
+                                <p>
+                                    <h5>Referanslar:</h5>
+                                    @for (int i = 1; i < @Model[0].referanslar.Count+1; i++)
+                                    {
+                                        <a>@Model[0].referanslar[i-1]</a>
+                                        @if (i %3 == 0){
+                                            <div class="row">
+                                                <a></a><br />
+                                            </div>
+                                        }
+                                    }
+                                </p>
+                            </div>
+                            <div class="entry-content">
+                                <p>
+                                    <h5>Kaynakça:</h5>
+                                    <ul>
+
+                                    @for (int i = 0; i < @Model[0].kaynakca.Count; i++)
+                                    {
+                                        <li>@Model[0].kaynakca[i]</li>
+                                        
+                                    }
+                                    </ul>>
+                                </p>
+                            </div>
+                        </article><!-- End blog entry -->
+
+
+
+                    </div><!-- End blog entries list -->
+
+
+
+                </div>
+
+            </div>
+        </section><!-- End Blog Section -->
+
+    </main><!-- End #main -->
+
+</body>
+</html>

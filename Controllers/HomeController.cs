@@ -14,11 +14,14 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using Web_Scraping_Akademi_Uygulaması.Controllers;
 using System.Net;
+using static Web_Scraping_Akademi_Uygulaması.Controllers.DatabaseController;
+using Nest;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 public class HomeController : Controller
 {
     SearchCode searchCode = new SearchCode();
-
     List<string> pdfUrls = new List<string>();
     public int makaleSayac = 0;
     DatabaseController veritabani = new DatabaseController();
@@ -36,6 +39,7 @@ public class HomeController : Controller
     public int a_alintiSayisi;
     public string a_doiNumarasi;
     public string a_urlAdresi;
+
     public ActionResult Index()
     {
         veritabani.bilgiAl();
@@ -43,6 +47,15 @@ public class HomeController : Controller
 
         return View(veritabani.modelList);
     }
+    public ActionResult Privacy(int id)
+    {
+        veritabani.bilgiAl2(id);
+        var model = veritabani.resultt;
+        Debug.WriteLine(model[0].ozet);
+        return View(model);
+    }
+
+
     public string makaleAdiBul(HtmlDocument doc_article)
     {
         var makaleler = doc_article.DocumentNode.SelectSingleNode("//title");
@@ -52,7 +65,7 @@ public class HomeController : Controller
             var makaleTitle = m_Title.Substring(m_Title.IndexOf("&raquo;  Makale  &raquo; ") + 25);
             //Debug.WriteLine("Makale başlığı: " + makaleTitle);
             makaleSayac++;
-            
+
 
             a_yayinAdi = makaleTitle;
             return makaleTitle;
@@ -165,7 +178,7 @@ public class HomeController : Controller
             var kaynakcaTitle = k_Title.Substring(k_Title.IndexOf("Kaynakça"));
 
             var lines = kaynakcaTitle.Split('\n');
-            
+
             foreach (var line in lines)
             {
                 if (!string.IsNullOrEmpty(line) && line != " " && line != " ")
@@ -248,7 +261,7 @@ public class HomeController : Controller
         if (tarih.InnerHtml.Contains("Yayımlanma Tarihi")) { }
         else
         {
-            for (int i = 4; i <= 6; i++)
+            for (int i = 4; i <= 10; i++)
             {
                 tarih = doc_article.DocumentNode.SelectSingleNode("//tr[" + i + "]");
                 if (tarih != null && tarih.InnerHtml.Contains("Yayımlanma Tarihi"))
@@ -260,17 +273,25 @@ public class HomeController : Controller
             }
 
         }
-        if (tarih !=null)
+        if (tarih != null)
         {
             var t_Title = tarih.InnerText.Trim();
-            var tarihTitle = t_Title.Substring(t_Title.IndexOf("Yayımlanma Tarihi") + 46);
-            //Debug.WriteLine("Yayımlanma tarihi: " + tarihTitle);
-            a_yayimlanmaTarihi = tarihTitle;
-            return tarihTitle;
+
+            try
+            {
+                var tarihTitle = t_Title.Substring(t_Title.IndexOf("Yayımlanma Tarihi") + 46);
+                //Debug.WriteLine("Yayımlanma tarihi: " + tarihTitle);
+                a_yayimlanmaTarihi = tarihTitle;
+                return tarihTitle;
+            }
+            catch
+            {
+                return "30 Ekim 2023";
+            }
         }
         else
         {
-            a_yayimlanmaTarihi ="0";
+            a_yayimlanmaTarihi = "30 Ekim 2023";
             Debug.WriteLine("Yayınlanma Tarihi bulunamadı");
             return "Yayınlanma Tarihibulunamadi";
         }
@@ -385,7 +406,7 @@ public class HomeController : Controller
     }
     public void DownloadPdf(string url)
     {
-        string ad = a_yayinAdi ;
+        string ad = a_yayinAdi;
         if (a_yayinAdi.Contains("?"))
         {
             ad = a_yayinAdi.Replace("?", "_");
@@ -397,7 +418,7 @@ public class HomeController : Controller
 
         }
 
-        string filePath = @"C:\Users\betlb\source\repos\Web_Scraping_Akademi_Uygulaması\pdf\"+ ad + ".pdf";
+        string filePath = @"C:\Users\betlb\source\repos\Web_Scraping_Akademi_Uygulaması\pdf\" + ad + ".pdf";
         Thread.Sleep(4000);
 
         var request = (HttpWebRequest)WebRequest.Create(url);
@@ -420,7 +441,6 @@ public class HomeController : Controller
     {
         string searchResult = searchText;
         Debug.WriteLine(searchResult);// searchteki anahtar kelime buraya geldi.
-
         if (searchResult.Contains(" "))
         {
             for (int i = 0; i < searchResult.Length; i++)
@@ -503,7 +523,7 @@ public class HomeController : Controller
                                             yayınTuruBul(doc_article);
                                             referansaBul(doc_article);
                                             alintiSayisiBul(doc_article);
-                                            veritabani.veriEkle( a_yayinAdi, a_yazarlar, a_yayinTuru, a_yayimlanmaTarihi, a_yayinciAdi, a_anahtarKelimelerArama, a_anahtarKelimelerMakale, a_ozet, a_kaynakca, a_referanslar, a_alintiSayisi, a_doiNumarasi, a_urlAdresi);
+                                            veritabani.veriEkle(a_yayinAdi, a_yazarlar, a_yayinTuru, a_yayimlanmaTarihi, a_yayinciAdi, a_anahtarKelimelerArama, a_anahtarKelimelerMakale, a_ozet, a_kaynakca, a_referanslar, a_alintiSayisi, a_doiNumarasi, a_urlAdresi);
 
                                         }
                                         else
