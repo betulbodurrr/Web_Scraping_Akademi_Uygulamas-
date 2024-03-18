@@ -416,15 +416,14 @@ public class HomeController : Controller
     public void DownloadPdf(string url)
     {
         string ad = a_yayinAdi;
-        if (a_yayinAdi.Contains("?"))
-        {
-            ad = a_yayinAdi.Replace("?", "_");
+        char[] invalidChars = System.IO.Path.GetInvalidFileNameChars();
 
-        }
-        if (a_yayinAdi.Contains("*"))
-        {
-            ad = a_yayinAdi.Replace("*", "_");
+        bool isValid = ad.All(c => !invalidChars.Contains(c));
 
+        if (!isValid)
+        {
+
+            ad = string.Join("_", ad.Split(invalidChars));
         }
 
         string filePath = @"C:\Users\betlb\source\repos\Web_Scraping_Akademi_Uygulaması\pdf\" + ad + ".pdf";
