@@ -14,6 +14,8 @@ namespace Web_Scraping_Akademi_Uygulaması.Controllers
         string dbConnection = "mongodb://localhost:27017/yazlab1";
         public List<AramaMotoru> modelList = new List<AramaMotoru>();
         public List<AramaMotoru> resultt = new List<AramaMotoru>();
+        public List<AramaMotoru> filtrelenmis2 = new List<AramaMotoru>();
+
         public long count = 0;
         
         public class AramaMotoru
@@ -118,7 +120,6 @@ namespace Web_Scraping_Akademi_Uygulaması.Controllers
 
             var database = dbClient.GetDatabase("yazlab1");
             var collection = database.GetCollection<AramaMotoru>("AramaMotoru");
-            //var filter = Builders<MyDataClass>.Filter.Eq(x => x.Name, "Ahmet");
 
             var filter = Builders<AramaMotoru>.Filter.Eq(x => x.Id, id);
             resultt = collection.Find(filter).ToList();
@@ -134,7 +135,50 @@ namespace Web_Scraping_Akademi_Uygulaması.Controllers
             return yil + "/" + (ay_Index + 1)+ "/" +gun ;
         }
 
+  
+
+        public void Filtrele2(string key,string[] yayinTuru, int? minAlintiSayisi, int? maxAlintiSayisi, string yazarlarinIsimleri)
+        {
+            MongoClient dbClient = new MongoClient(dbConnection);
+            var database = dbClient.GetDatabase("yazlab1");
+            var collection = database.GetCollection<AramaMotoru>("AramaMotoru");
+
+            var filterBuilder = Builders<AramaMotoru>.Filter;
+            var filter = filterBuilder.Empty;
+            Debug.WriteLine(key);
+     
+            if (key != null && key.Length > 0)
+            {
+                filter &= filterBuilder.AnyIn(x => x.anahtarKelimelerArama, key);
+            }
+
+            if (yayinTuru != null && yayinTuru.Length > 0)
+            {
+                filter &= filterBuilder.In(x => x.yayinTuru, yayinTuru);
+            }
+
+            if (minAlintiSayisi.HasValue)
+            {
+                filter &= filterBuilder.Gte(x => x.alintiSayisi, minAlintiSayisi.Value);
+            }
+
+            if (maxAlintiSayisi.HasValue)
+            {
+                filter &= filterBuilder.Lte(x => x.alintiSayisi, maxAlintiSayisi.Value);
+            }
+
+            if (!string.IsNullOrEmpty(yazarlarinIsimleri))
+            {
+                filter &= filterBuilder.Regex(x => x.yazarlar, new BsonRegularExpression(yazarlarinIsimleri));
+            }
+
+            filtrelenmis2 = collection.Find(filter).ToList();
+
+
+        }
+
+
     }
-    
+
 
 }

@@ -51,7 +51,16 @@ public class HomeController : Controller
     {
         veritabani.bilgiAl2(id);
         var model = veritabani.resultt;
-        Debug.WriteLine(model[0].ozet);
+        //Debug.WriteLine(model[0].ozet);
+        return View(model);
+    }
+    [HttpPost]
+
+    public ActionResult aramaFiltre(string key,string[] yayinTuru, int? minAlintiSayisi, int? maxAlintiSayisi, string yazarlarinIsimleri)
+    {
+        veritabani.Filtrele2(key,yayinTuru,minAlintiSayisi,maxAlintiSayisi,yazarlarinIsimleri);
+
+        var model = veritabani.filtrelenmis2;
         return View(model);
     }
 

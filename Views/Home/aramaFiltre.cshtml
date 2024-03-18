@@ -34,7 +34,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @for (int i = Model.Count - 19; Model.Count != 0 & Model.Count > 19 && i < Model.Count; i++)
+                                    @for (int i = 0; Model.Count != 0 & Model.Count > 0 && i < Model.Count; i++)
                                     {
                                         <tr>
                                             <td>
@@ -56,7 +56,11 @@
                                         </tr>
 
                                     }
-                                   
+                                    @if (Model.Count == 0)
+                                    {
+                                        <h1>Bulunamadı</h1>
+                                    }
+
                                 </tbody>
                             </table>
                             <!-- End Table with stripped rows -->
@@ -66,13 +70,10 @@
 
                 </div>
                 <div class="col-lg-4">
-                    <br >
-                    <br >
-                    <br >
-                   <div class="container">
-                        
+                    <div class="container">
 
-                    <div class="sidebar">
+
+                        <div class="sidebar">
                             <form action="/Home/aramaFiltre" method="post">
                                 <h1> ____________________________ </h1>
 
@@ -117,8 +118,8 @@
                                     <input type="checkbox" name="yayinTuru" value="TJST">
                                     TJST
                                 </label>
-                            
-                               
+
+
                                 <h4><br />Alıntı Sayısı</h4>
                                 <label for="minAlintiSayisi">Minimum Alıntı Sayısı:</label>
                                 <input type="number" id="minAlintiSayisi" name="minAlintiSayisi" min="0">
@@ -139,10 +140,6 @@
 
                                 <button type="submit">Filtrele</button>
                             </form>
-                        </div>
-                        
-                       
-
                         </div>
                     </div>
 
