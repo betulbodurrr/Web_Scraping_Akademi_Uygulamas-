@@ -145,11 +145,13 @@ namespace Web_Scraping_Akademi_Uygulaması.Controllers
 
             var filterBuilder = Builders<AramaMotoru>.Filter;
             var filter = filterBuilder.Empty;
-            Debug.WriteLine(key);
-     
             if (key != null && key.Length > 0)
             {
-                filter &= filterBuilder.AnyIn(x => x.anahtarKelimelerArama, key);
+                filter &= filterBuilder.AnyIn(x => x.anahtarKelimelerMakale, new List<string> { key });
+            }
+            if (key != null && key.Length > 0)
+            {
+                filter &= filterBuilder.Regex(x => x.anahtarKelimelerArama, new BsonRegularExpression(key));
             }
 
             if (yayinTuru != null && yayinTuru.Length > 0)
