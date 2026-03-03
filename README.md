@@ -3,7 +3,7 @@ Web Scraping Akademi Uygulaması<br>
 <img align="center" src="https://www.svgrepo.com/show/237418/turkey.svg"  height="30" width="40" />Tr:</a><br>
 Yazılım Laboratuvarı II dersimizin 1. projesi olan Web Scraping Akademi Uygulaması Web projesidir.
 C# yazılmıştır.<br>
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/csharp/csharp-original.svg" alt="csharp" width="40" height="40"/> <br>
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/csharp/csharp-original.svg" alt="csharp" width="40" height="40"/> <img src="https://img.icons8.com/?size=100&id=74402&format=png&color=000000" alt="csharp" width="40" height="40"/> <br>
 ## 📘 Proje Hakkında  
 Akademik arama motorlarından web scraping yöntemiyle DergiPark gibi kaynaklardan otomatik olarak toplayan, toplanan verileri MongoDB'de depolayan ve Elasticsearch üzerinden gelişmiş arama, filtreleme ve sıralama imkanı sunan bir web uygulamasıdır.<br>
 <img align="center" src="https://github.com/betulbodurrr/Web_Scraping_Akademi_Uygulamas-/blob/main/img/project1.png"  height="400" width="700" /><br>
@@ -47,7 +47,7 @@ Kullanıcılar;<br>
 | Veritabanı      | MongoDB (MongoDB.Driver)             | 
 | Web Çatısı      | ASP.NET Core, Blazor                 | 
 | Ön Yüz          | Blazor, HTML, CSS, Bootstrap         | 
-| İşletim Ortamı  | .NET 6, MongoDB 4.x                  |
+| İşletim Ortamı  | .NET 6, MongoDB 7.0                  |
 
 ## Öne Çıkan Özellikler<br>
 •	API kullanmadan doğrudan HTML scraping ile veri toplama.<br>
@@ -64,7 +64,7 @@ Kullanıcılar;<br>
 
 Software Laboratory I, our 1rd project is a Web Scraping Academy Application web project.
 It is developed using C# programming language.<br>
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/csharp/csharp-original.svg" alt="csharp" width="40" height="40"/> <br>
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/csharp/csharp-original.svg" alt="csharp" width="40" height="40"/>  <img src="https://img.icons8.com/?size=100&id=74402&format=png&color=000000" alt="csharp" width="40" height="40"/> <br>
 
 ## Project Description<br>
 It is a web application that automatically collects data from academic search engines and sources like DergiPark using the web scraping method.
